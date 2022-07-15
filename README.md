@@ -1,1 +1,1 @@
-# exportc
+# native-export
