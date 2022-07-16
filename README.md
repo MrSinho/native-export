@@ -75,7 +75,7 @@ static const int32_t src_buffer[3] = {
 #endif//cplusplus
 ```
 
-To reinterpret the `src_buffer` as floating point values, do:
+To reinterpret the `src_buffer` data as floating point values, do:
 
 ```c
 float* as_floats = (float*)src_buffer;
