@@ -3,7 +3,10 @@ extern "C" {
 #endif//_cplusplus
 
 
-#include <native-export/native-export.h>
+#include <native-export/native-export.h>//to export
+
+#include "../native-export-output.h"//generated header
+
 #include <assert.h>
 
 #ifdef _MSC_VER
@@ -56,6 +59,12 @@ int main(void) {
 		fclose(dst_stream);
 	}//WRITE HEADER FILE
 
+
+	{//ACCESS HEADER FILE
+		puts("READING HEADER VALUES");
+		float* p_values = (float*)src_buffer;//defined on generated header at: "../native-export-output.h"
+		printf("buffer 0 values: %f, %f, %f\n", p_values[0], p_values[1], p_values[2]);
+	}//ACCESS HEADER FILE
 
 	free(dst_file);
 
