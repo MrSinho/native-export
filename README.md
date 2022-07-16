@@ -1,11 +1,21 @@
 # native-export
 
+---
+
 Supported languages:
  - C/C++
 
 A simple library for exporting a structure or some array data to a c-header like output.
 
-## Clone and build
+---
+# Chapters
+- [Clone](#clone)
+- [C](#c)
+    - [Usage example](#usage-example)
+    - [Header output](#header-output)
+---
+
+## Clone
 
 ```bash
 git clone --recursive https://github.com/mrsinho/native-export.git
@@ -16,7 +26,9 @@ cmake -DNATIVE_EXPORT_BUILD_SAMPLE=ON ..
 cmake --build .
 ```
 
-## [Usage example](c/sample/src/native-export-sample.c)
+## C
+
+# [Usage example](c/sample/src/native-export-sample.c)
 
 ```c
 #include <native-export/native-export.h>
