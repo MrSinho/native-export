@@ -51,7 +51,7 @@ int main(void) {
 }
 ```
 
-See results on [`native-export-output.h`](c/sample/native-export-output.h)
+## [Header output](c/sample/native-export-output.h)
 
 ```c
 #pragma once
@@ -73,4 +73,12 @@ static const int32_t src_buffer[3] = {
 #ifdef __cplusplus
 }
 #endif//cplusplus
+```
+
+To reinterpret the `src_buffer` as floating point values, do:
+
+```c
+float* as_floats = (float*)src_buffer;
+    
+printf("%f, %f, %f\n", as_floats[0], as_floats[1], as_floats[2]);
 ```
