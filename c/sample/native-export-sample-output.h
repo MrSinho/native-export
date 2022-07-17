@@ -1,4 +1,6 @@
-#pragma once
+#ifndef NATIVE_EXPORT_SAMPLE_OUTPUT_H
+#define NATIVE_EXPORT_SAMPLE_OUTPUT_H
+
 #ifdef __cplusplus
 extern "C" {
 #endif//__cplusplus
@@ -30,3 +32,4 @@ static const uint8_t src_buffer_1[10] = {
 #ifdef __cplusplus
 }
 #endif//cplusplus
+#endif//NATIVE_EXPORT_SAMPLE_OUTPUT_H

@@ -105,8 +105,8 @@ NativeExportResult nativeExportDescription(void* p_src, const uint32_t src_size,
     sprintf(s_arr_size, "[%" PRIu32 "] = {\n", item_count);
     strcat(description_start, s_arr_size);
 
-    //                                          representing values             +   commas and line endings
-    char* description_body = (char*)calloc(1, (item_max_char_count * item_count) + (item_count * 2));
+    //                                          representing values             +   commas, line endings and tabs
+    char* description_body = (char*)calloc(1, (item_max_char_count * item_count) + (item_count * 3));
     nativeExportError(description_body == NULL, "invalid description body memory", return NATIVE_EXPORT_INVALID_MEMORY);
 
     for (uint32_t item_idx = 0; item_idx < item_count; item_idx++) {
@@ -208,24 +208,30 @@ NativeExportResult nativeExport(NativeExportInfo export_info, char** pp_dst_file
     nativeExportError(export_info.p_buffers == NULL, "invalid buffers memory", return NATIVE_EXPORT_INVALID_MEMORY);
     nativeExportError(pp_dst_file_data == NULL, "invalid destination file memory", return NATIVE_EXPORT_INVALID_MEMORY);
     
-    const char* start = "\
-#pragma once\n\
+    char start[1024];
+    if (export_info.header_macro_name == NULL) {
+        strcpy(start, "#pragma once\n");
+    }
+    else {
+        strcpy(start, "#ifndef ");
+        strcat(start, export_info.header_macro_name);
+        strcat(start, "\n\
+#define ");
+        strcat(start, export_info.header_macro_name);
+        strcat(start, "\n\n");
+    }
+    strcat(start, "\
 #ifdef __cplusplus\n\
 extern \"C\" {\n\
 #endif//__cplusplus\n\n\n\
-#include <stdint.h>\n\n\n";
-
-    const char* end = "\n\
-#ifdef __cplusplus\n\
-}\n\
-#endif//cplusplus";
+#include <stdint.h>\n\n\n");
 
     char** pp_descriptions = calloc(export_info.buffer_count, sizeof(char*));
     nativeExportError(pp_descriptions == NULL, "invalid descriptions memory", return NATIVE_EXPORT_INVALID_MEMORY);
 
     uint32_t descriptions_size = 0;
     for (uint32_t buffer_idx = 0; buffer_idx < export_info.buffer_count; buffer_idx++) {
-        char* description;
+        char* description = NULL;
         nativeExportDescription(
             export_info.p_buffers[buffer_idx].p_src, 
             export_info.p_buffers[buffer_idx].size, 
@@ -235,6 +241,16 @@ extern \"C\" {\n\
         );
         pp_descriptions[buffer_idx] = description;
         descriptions_size += (uint32_t)strlen(description);
+    }
+
+    char end[1024];
+    strcpy(end, "\n\
+#ifdef __cplusplus\n\
+}\n\
+#endif//cplusplus");
+    if (export_info.header_macro_name != NULL) {
+        strcat(end, "\n#endif//");
+        strcat(end, export_info.header_macro_name);
     }
 
 
@@ -256,6 +272,52 @@ extern \"C\" {\n\
     return NATIVE_EXPORT_SUCCESS;
 }
 
+NativeExportResult nativeExportWriteHeader(NativeExportInfo export_info, const char* dst_path) {
+
+    NativeExportResult r = NATIVE_EXPORT_SUCCESS;
+
+    char* dst_file_data = NULL;
+    r = nativeExport(export_info, &dst_file_data);
+
+    if (r != NATIVE_EXPORT_SUCCESS) {
+        return r;
+    }
+
+    FILE* dst_stream = fopen("../sample/native-export-sample-output.h", "w");
+    nativeExportError(dst_stream == NULL, "invalid destination file stream", return NATIVE_EXPORT_INVALID_STREAM);
+    fwrite(dst_file_data, 1, strlen(dst_file_data), dst_stream);
+    fclose(dst_stream);
+
+    return NATIVE_EXPORT_SUCCESS;
+}
+
+NativeExportResult nativeExportGenerateHeaderDefinitions(NativeExportInfo* p_export_infos, const uint32_t export_info_count, const char* dst_path) {
+
+    uint32_t additional_size = 0;
+    for (uint32_t export_idx = 0; export_idx < export_info_count; export_idx++) {
+        additional_size += 1 + (uint32_t)strlen(p_export_infos[export_idx].header_macro_name) + (uint32_t)strlen("#define ") + 1;
+    }
+
+    const char* common = "#pragma once\n\n";
+
+    uint32_t file_size = (uint32_t)strlen(common) + additional_size;
+    char* dst_file_data = calloc(1, file_size);
+    nativeExportError(dst_file_data == NULL, "invalid destination file data", return NATIVE_EXPORT_INVALID_MEMORY);
+
+    strcpy(dst_file_data, common);
+    for (uint32_t export_idx = 0; export_idx < export_info_count; export_idx++) {
+        strcat(dst_file_data, "#define _");
+        strcat(dst_file_data, p_export_infos[export_idx].header_macro_name);
+        strcat(dst_file_data, "\n");
+    }
+
+    FILE* dst_stream = fopen(dst_path, "w");
+    nativeExportError(dst_stream == NULL, "invalid destination file stream", return NATIVE_EXPORT_INVALID_STREAM);
+    fwrite(dst_file_data, file_size, 1, dst_stream);
+    fclose(dst_stream);
+
+    return NATIVE_EXPORT_SUCCESS;
+}
 
 #ifdef __cplusplus
 }

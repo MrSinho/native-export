@@ -1,11 +1,11 @@
+#ifndef NATIVE_EXPORT_H
+#define NATIVE_EXPORT_H
+
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif//__cplusplus
-
-
-
-#ifndef NATIVE_EXPORT_H
-#define NATIVE_EXPORT_H
 
 
 
@@ -41,7 +41,8 @@ typedef enum NativeExportResult {
     NATIVE_EXPORT_INVALID_MEMORY            =-2,
     NATIVE_EXPORT_INVALID_FORMAT            =-3,
     NATIVE_EXPORT_INVALID_BUFFER_COUNT      =-4,
-    NATIVE_EXPORT_INVALID_SIZE              =-5
+    NATIVE_EXPORT_INVALID_SIZE              =-5,
+    NATIVE_EXPORT_INVALID_STREAM            =-6
 } NativeExportResult;
 
 
@@ -58,6 +59,7 @@ typedef struct NativeExportBuffer {
 typedef struct NativeExportInfo {
     uint32_t            buffer_count;
     NativeExportBuffer* p_buffers;
+    char*               header_macro_name;
 } NativeExportInfo;
 
 
@@ -74,10 +76,13 @@ extern NativeExportResult nativeExportDescription(void* p_src, const uint32_t sr
 
 extern NativeExportResult nativeExport(NativeExportInfo export_info, char** pp_dst_file_data);
 
+extern NativeExportResult nativeExportWriteHeader(NativeExportInfo export_info, const char* dst_path);
 
+extern NativeExportResult nativeExportGenerateHeaderDefinitions(NativeExportInfo* p_export_infos, const uint32_t export_info_count, const char* dst_path);
 
-#endif//NATIVE_EXPORT_H
 
 #ifdef __cplusplus
 }
 #endif//_cplusplus
+
+#endif//NATIVE_EXPORT_H

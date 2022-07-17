@@ -5,7 +5,11 @@ extern "C" {
 
 #include <native-export/native-export.h>//to export
 
-#include "../native-export-output.h"//generated header
+#include "../native-export-outputs.h"//to check macro definitions
+
+#ifdef _NATIVE_EXPORT_SAMPLE_OUTPUT_H
+#include "../native-export-sample-output.h"//generated header
+#endif//_NATIVE_EXPORT_SAMPLE_OUTPUT_H
 
 #include <assert.h>
 
@@ -43,30 +47,27 @@ int main(void) {
 
 	NativeExportInfo export_info = {
 		2,
-		buffers
+		buffers,
+		"NATIVE_EXPORT_SAMPLE_OUTPUT_H"
 	};
 
+	{//Get file data
+		char* dst_file;
+		nativeExport(export_info, &dst_file);
+		printf("c header file:\n\n\n%s\n\n\n", dst_file);
+	}
 
-	char* dst_file;
-	nativeExport(export_info, &dst_file);
+	{
+		nativeExportWriteHeader(export_info, "../sample/native-export-sample-output.h");
+	}
 
-	printf("c header file:\n\n\n%s\n\n\n", dst_file);
+	nativeExportGenerateHeaderDefinitions(&export_info, 1, "../sample/native-export-outputs.h");
 
-	{//WRITE HEADER FILE
-		FILE* dst_stream = fopen("../sample/native-export-output.h", "w");
-		assert(dst_stream != NULL);
-		fwrite(dst_file, 1, strlen(dst_file), dst_stream);
-		fclose(dst_stream);
-	}//WRITE HEADER FILE
-
-
-	{//ACCESS HEADER FILE
+#ifdef _NATIVE_EXPORT_SAMPLE_OUTPUT_H
 		puts("READING HEADER VALUES");
-		float* p_values = (float*)src_buffer;//defined on generated header at: "../native-export-output.h"
+		float* p_values = (float*)src_buffer;//defined at generated header "../native-export-sample-output.h"
 		printf("buffer 0 values: %f, %f, %f\n", p_values[0], p_values[1], p_values[2]);
-	}//ACCESS HEADER FILE
-
-	free(dst_file);
+#endif//_NATIVE_EXPORT_SAMPLE_OUTPUT_H
 
 	return 0;
 }
