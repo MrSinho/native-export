@@ -63,8 +63,17 @@ int main(void) {
 }
 ```
 
-## [Header output](c/sample/native-export-output.h)
+## [Header outputs](c/sample/)
 
+Output with [header file definitions](c/sample/native-export-outputs.h):
+```c
+#pragma once
+
+#define _NATIVE_EXPORT_SAMPLE_OUTPUT_H
+
+```
+
+Output header file with the [specified data](c/sample/native-export-sample-output.h):
 ```c
 #pragma once
 #ifdef __cplusplus
