@@ -80,6 +80,11 @@ extern NativeExportResult nativeExportWriteHeader(NativeExportInfo export_info, 
 
 extern NativeExportResult nativeExportGenerateHeaderDefinitions(NativeExportInfo* p_export_infos, const uint32_t export_info_count, const char* dst_path);
 
+static void nativeExportRelease(NativeExportInfo* p_export_info) {
+    free(p_export_info->p_buffers);
+}
+
+
 
 #ifdef __cplusplus
 }
