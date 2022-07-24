@@ -273,6 +273,7 @@ extern \"C\" {\n\
 }
 
 NativeExportResult nativeExportWriteHeader(NativeExportInfo export_info, const char* dst_path) {
+    nativeExportError(dst_path == NULL, "invalid destination path", return NATIVE_EXPORT_INVALID_MEMORY);
 
     NativeExportResult r = NATIVE_EXPORT_SUCCESS;
 
@@ -283,7 +284,7 @@ NativeExportResult nativeExportWriteHeader(NativeExportInfo export_info, const c
         return r;
     }
 
-    FILE* dst_stream = fopen("../sample/native-export-sample-output.h", "w");
+    FILE* dst_stream = fopen(dst_path, "w");
     nativeExportError(dst_stream == NULL, "invalid destination file stream", return NATIVE_EXPORT_INVALID_STREAM);
     fwrite(dst_file_data, 1, strlen(dst_file_data), dst_stream);
     fclose(dst_stream);
