@@ -5,6 +5,9 @@
 Supported languages:
  - C/C++
 
+Samples:
+ * Currently used to [store shaders](https://github.com/MrSinho/shgui/tree/main/shaders/include/shgui) in a [header file](https://github.com/MrSinho/shgui/blob/main/shaders/export-shaders.c) and [font data](https://github.com/MrSinho/shgui/blob/main/fonts/include/fonts/consolas.h) for an immediate mode gui library
+
 A simple library for exporting a structure or some array data to a c-header like output.
 
 ---
