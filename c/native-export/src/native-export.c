@@ -232,13 +232,20 @@ extern \"C\" {\n\
     uint32_t descriptions_size = 0;
     for (uint32_t buffer_idx = 0; buffer_idx < export_info.buffer_count; buffer_idx++) {
         char* description = NULL;
-        nativeExportDescription(
+        NativeExportResult r = nativeExportDescription(
             export_info.p_buffers[buffer_idx].p_src, 
             export_info.p_buffers[buffer_idx].size, 
             export_info.p_buffers[buffer_idx].format, 
             export_info.p_buffers[buffer_idx].name, 
             &description
         );
+
+        nativeExportError(
+            r != NATIVE_EXPORT_SUCCESS,
+            "failed exporting description",
+            free(pp_descriptions);  return 0
+        );
+
         pp_descriptions[buffer_idx] = description;
         descriptions_size += (uint32_t)strlen(description);
     }
